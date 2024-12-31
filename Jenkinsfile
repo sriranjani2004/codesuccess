@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        NODEJS_HOME = '/usr/local/bin/node'  // Update this path if Node.js is installed elsewhere
+        NODEJS_HOME = '/Users/ariv/.nvm/versions/node/v20.11.0/bin'  // Update this path if Node.js is installed elsewhere
         SONAR_SCANNER_PATH = '/Users/prabh/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin'
     }
 
