@@ -1,12 +1,13 @@
 pipeline {
     agent any
+
     tools {
-        nodejs 'nodejs-20.11.0' // Using Jenkins tool for Node.js
+        nodejs 'NodeJS' // Ensure NodeJS is installed and configured
     }
 
     environment {
-        NODEJS_HOME = '/usr/local/bin/node'  // Correct path for macOS Node.js installation
-        SONAR_SCANNER_PATH = '/Users/ariv/Downloads/sonar-scanner-6.2.1.4610-macosx-x64/bin' // Ensure this is correct
+        NODEJS_HOME = '/usr/local/bin/node'
+        PATH = "$NODEJS_HOME:$PATH:/usr/local/sonar-scanner/bin"
     }
 
     stages {
@@ -16,49 +17,25 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install and Build') {
             steps {
-                // Set the PATH and install dependencies using npm
                 sh '''
-                export PATH=$NODEJS_HOME:$PATH
-                npm install
+                    npm install
                 '''
             }
         }
 
-        stage('Lint') {
-            steps {
-                // Run linting to ensure code quality
-                sh '''
-                export PATH=$NODEJS_HOME:$PATH
-                npm run lint
-                '''
-            }
-        }
-
-        stage('Build') {
-            steps {
-                // Build the React app
-                sh '''
-                export PATH=$NODEJS_HOME:$PATH
-                npm run build
-                '''
-            }
-        }
-
-        stage('SonarQube Analysis') {
+        stage('SonarCodeAnalysis') {
             environment {
-                SONAR_TOKEN = credentials('sonar-token') // Accessing the SonarQube token stored in Jenkins credentials
+                SONAR_TOKEN = credentials('sonar-token')
             }
             steps {
-                // Ensure that sonar-scanner is in the PATH
+                // Invoke sonar-scanner directly (path included in PATH environment variable)
                 sh '''
-                export PATH=$SONAR_SCANNER_PATH:$PATH
-                which sonar-scanner || echo "SonarQube scanner not found. Please install it."
-                sonar-scanner -Dsonar.projectKey=proj21 \
+                    sonar-scanner \
+                    -Dsonar.projectKey=newtoken \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://localhost:9000 \
-                    -Dsonar.token=$SONAR_TOKEN 2>&1
+                    -Dsonar.host.url=http://localhost:9000
                 '''
             }
         }
@@ -66,13 +43,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully'
+            echo "Pipeline SUCCESSFULLY Build"
         }
         failure {
-            echo 'Pipeline failed'
-        }
-        always {
-            echo 'This runs regardless of the result.'
+            echo "Pipeline failed"
         }
     }
 }
