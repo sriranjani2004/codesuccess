@@ -33,7 +33,7 @@ pipeline {
                 // Invoke sonar-scanner directly (path included in PATH environment variable)
                 sh '''
                     sonar-scanner \
-                    -Dsonar.projectKey=project22 \
+                    -Dsonar.projectKey=newtoken \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=http://localhost:9000
                 '''
